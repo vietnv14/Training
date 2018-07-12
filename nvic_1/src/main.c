@@ -1,13 +1,5 @@
-
 #include "hw_stm32f051r8.h"
-
-
-unsigned int led_state = 0;
-
-void led_on(unsigned char pin_number);
-void led_off(unsigned char pin_number);
-void delay(unsigned int timeout);
-
+void Blink_led();
 /*************************************************************************************************/
 void Reserved_IRQHandler(void)
 {
@@ -59,40 +51,28 @@ void SysTick_Handler(void)
 
 void EXTI0_IRQHandler(void)
 {
+	unsigned int tt;
 	unsigned int temp;
 	/* Ngat cua PA0 */
-	temp = read_reg(EXTI_PR, (1 << 0));
-	if (1 == temp)
-	{
-		if(0 == led_state)
+	tt = read_reg(GPIO_IDR(PORTB), 1<<15);
+		if(tt)
 		{
-			led_on(LD3_PIN);
-			led_state = 1;
+			Blink_led();
+			//delay(200);
 		}
-		else
-		{
-			led_off(LD3_PIN);
-			led_state = 0;
-		}
-	}
 	/* xoa co ngat */
 	temp = 1 << 0;
 	write_reg(EXTI_PR, temp);
 	write_reg(NVIC_ICPR, (1 << 5));
 }
-
 void EXTI2_3_IRQHandler(void)
 {
-	unsigned int temp;
-	delay(0xff);
-	/* xoa co ngat */
-	temp = 1 << 2;
-	write_reg(EXTI_PR, temp);
-	write_reg(NVIC_ICPR, (1 << 6));
+	while(1)
+	{
+		/* nothing to be run here */
+	}	
 }
-
 /*************************************************************************************************/
-
 void delay(unsigned int timeout)
 {
     unsigned int t1, t2;
@@ -105,44 +85,37 @@ void delay(unsigned int timeout)
     }
 }
 
-void enabled_clock(void)
+void enabled_clock_button()
 {
-	unsigned int tempreg;
-	/* set mode led ld3 */
-	tempreg = read_reg(RCC_AHBENR, ~(1 << 19));
-	tempreg = tempreg | (1 << 19);
-	write_reg(RCC_AHBENR, tempreg);
-	/* user button */
-	tempreg = read_reg(RCC_AHBENR, ~(1 << 17));
-	tempreg = tempreg | (1 << 17);
-	write_reg(RCC_AHBENR, tempreg);
+	//enable clock portA
+	read_reg(RCC_APB2ENR, ~(1<<2));
+	write_reg(RCC_APB2ENR, (1<<2));
 }
 
-void init_pin(void)
+void Set_Mode_Pin_A()
 {
-	unsigned int tempreg;
-	/* set mode led ld3 */
-	tempreg = read_reg(GPIOC_MODER, ~(0x03 << 18));
-	tempreg = tempreg | (GPIO_MODER_OUTPUT << 18);
-	write_reg(GPIOC_MODER, tempreg);
-	/* set mode led ld4 */
-	tempreg = read_reg(GPIOC_MODER, ~(0x03 << 16));
-	tempreg = tempreg | (GPIO_MODER_OUTPUT << 16);
-	write_reg(GPIOC_MODER, tempreg);
-	/* set mode user button */
-	tempreg = read_reg(GPIOA_MODER, ~(0x03 << 0));
-	tempreg = tempreg | (GPIO_MODER_INPUT << 0);
-	write_reg(GPIOA_MODER, tempreg);
-	/* set mode PA2 */
-	tempreg = read_reg(GPIOA_MODER, ~(0x03 << 4));
-	tempreg = tempreg | (GPIO_MODER_INPUT << 4);
-	write_reg(GPIOA_MODER, tempreg);
-	/* pull up */
-	tempreg = read_reg(GPIOA_PUPDR, ~(0x03 << 4));
-	tempreg = tempreg | (0x01 << 4);
-	write_reg(GPIOA_PUPDR, tempreg);
+	unsigned int i;
+	unsigned int temp_reg;
+	for(i = 4; i <= 6; i++)
+	{
+		/* xoa du lieu hien tai */
+		read_reg(GPIO_CRL(PORTA), ~(0x3 << 20)); //read_reg(GPIO_CRL(PORTA), ~(0x3 << GPIO_CRL_MODE(i)));
+		/* ghi du lieu moi vao */
+		write_reg(GPIO_CRL(PORTA), (1) << 21);
+		// xoa du lieu hien tai 
+		read_reg(GPIO_CRL(PORTA), ~(0x3 << 22)); //read_reg(GPIO_CRL(PORTA), ~(0x3 << GPIO_CRL_CNF(i)));
+		write_reg(GPIO_CRL(PORTA), 1<< 23); //write_reg(GPIO_CRL(PORTA), (GPIO_CNF_OUTPUT_PP)<< GPIO_CRL_CNF(i));
+	} 	
 }
 
+void init_pin()
+{	
+	//set Mode for pin PA4, PA5, PA6
+	Set_Mode_Pin_A();
+	
+	//Set bit for pin PA4, PA5, PA6
+	//GPIO_BSRR(PORTA) |= 1<<4 | 1<<5 | 1<<6;
+}
 void init_interrupt(void)
 {
 	unsigned int tempreg;
@@ -154,64 +127,77 @@ void init_interrupt(void)
 	tempreg = read_reg(EXTI_RTSR, ~(1 << 0));
 	tempreg = tempreg | (1 << 0);
 	write_reg(EXTI_RTSR, tempreg);
-	/* enable interrupt for EXTI2 */
-	tempreg = read_reg(EXTI_IMR, ~(1 << 2));
-	tempreg = tempreg | (1 << 2);
-	write_reg(EXTI_IMR, tempreg);
-
-	tempreg = read_reg(EXTI_RTSR, ~(1 << 2));
-	tempreg = tempreg | (1 << 2);
-	write_reg(EXTI_RTSR, tempreg);
-	/* SYSCFG */
-	tempreg = read_reg(SYSCFG_EXTICR1, ~(0x0F << 0));
+	/* AFIO */
+	tempreg = read_reg(AFIO_EXTICR1, ~(0x0F << 0));
 	tempreg = tempreg | (0x00 << 0);
-	write_reg(SYSCFG_EXTICR1, tempreg);
+	write_reg(AFIO_EXTICR1, tempreg);
 	/* NVIC */
 	/* user button */
 	tempreg = read_reg(NVIC_PRI1, ~(0xFF << 8));
 	tempreg = tempreg | (0x01 << 14);
 	write_reg(NVIC_PRI1, tempreg);
 	
-	/* PA2 - EXTI2 */
-	tempreg = read_reg(NVIC_PRI1, ~(0xFF << 16));
-	tempreg = tempreg | (0x02 << 22);
-	write_reg(NVIC_PRI1, tempreg);
-	
 	/* user button */
 	tempreg = read_reg(NVIC_ISER, ~(1 << 5));
 	tempreg = tempreg | (1 << 5);
-	write_reg(NVIC_ISER, tempreg);
-	
-	/* PA2 - EXTI2 */
-	tempreg = read_reg(NVIC_ISER, ~(1 << 6));
-	tempreg = tempreg | (1 << 6);
 	write_reg(NVIC_ISER, tempreg);
 	/* enable global interrupt */
 	asm("cpsie i");
 	//asm("cpsid i");
 }
-
-void led_on(unsigned char pin_number)
+void led_on()
 {
-	write_reg(GPIOC_BSRR, 1u << pin_number);
+	//Set pin again
+	
+	write_reg(GPIO_BSRR(PORTA), 1<<21); // Turn on led 3 = PA5
+}
+void led_off()
+{
+	//Set pin again
+	write_reg(GPIO_BSRR(PORTA), 1<<5); // Turn off led 3 = PA5
 }
 
-void led_off(unsigned char pin_number)
+void Blink_led()
 {
-	write_reg(GPIOC_BSRR, 1u << (pin_number + 16u));
+	//Reset pin
+	//GPIO_BSRR(PORTA) |= 1<<20 | 1<<21 | 1<<22;
+	unsigned short i, j;
+	for(i = 20, j = 4; i <= 22; ++i)
+	{
+		if(!(read_reg(GPIO_IDR(PORTB), (1<<15))))
+		{
+			led_off();
+			break;
+		}
+		//led on
+		write_reg(GPIO_BSRR(PORTA), 1<<i);
+		delay(100);
+		//led off
+		write_reg(GPIO_BSRR(PORTA), 1<<(j++));
+		if(i == 22)
+		{
+			i = 19;
+			j = 4;
+		}
+	}
+}
+
+void Init_Button()
+{
+	//clear bit 28-31
+	read_reg(GPIO_CRH(PORTB), (~(0x3 << 28 | 0x3 << 30 ))); //read_reg(GPIO_CRH(PORTB), (~(0x3 << GPIO_CRL_MODE(7) | 0x3 << GPIO_CRL_CNF(7) )));
+	//set 1 bit 31 
+	write_reg(GPIO_CRH(PORTB), 1<<31); //write_reg(GPIO_CRH(PORTB), GPIO_CNF_INTPUT_PP<<GPIO_CRL_CNF(7));
+	write_reg(GPIO_ODR(PORTB), 1<<15);
 }
 
 void main(void)
 {
-	enabled_clock();
+	enabled_clock_button();
 	init_pin();
-	init_interrupt();
+	Init_Button();
 	while(1)
 	{
-		led_on(LD4_PIN);
-		delay(0xff);
-		led_off(LD4_PIN);
-		delay(0xff);
+		
 	}
 }
-
