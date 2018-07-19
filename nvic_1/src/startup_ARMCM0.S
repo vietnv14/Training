@@ -104,6 +104,15 @@ __Vectors:
 	.long	Reserved_IRQHandler         /* 29: Reserved - CPU FPGA        */
 	.long	Reserved_IRQHandler         /* 30: UART3    - CPU FPGA        */
 	.long	Reserved_IRQHandler         /* 31: SPI Touchscreen - CPU FPGA */
+	.long	Reserved_IRQHandler         /* 32: Reserved                   */
+	.long	Reserved_IRQHandler         /* 33: Reserved                   */
+	.long	Reserved_IRQHandler         /* 34: Reserved                   */
+	.long	Reserved_IRQHandler         /* 35: Reserved                   */
+	.long	Reserved_IRQHandler         /* 36: Reserved                   */
+	.long	Reserved_IRQHandler         /* 37: Reserved                   */
+	.long	Reserved_IRQHandler         /* 38: Reserved                   */
+	.long	Reserved_IRQHandler         /* 39: Reserved                   */
+	.long	EXTI15_IRQHandler           /* 40: EXTI15_10            	  */
 
 	.size	__Vectors, . - __Vectors
 
