@@ -77,8 +77,8 @@ __Vectors:
 	.long	Reserved_IRQHandler         /*  2:  Timer0 / Timer1           */
 	.long	Reserved_IRQHandler         /*  3:  Timer2 / Timer3           */
 	.long	Reserved_IRQHandler         /*  4:  MCIa                      */
-	.long	EXTI0_IRQHandler            /*  5:  EXTI0                     */
-	.long	EXTI2_3_IRQHandler         	/*  6:  UART0 - DUT FPGA          */
+	.long	Reserved_IRQHandler         /*  5:  EXTI0                     */
+	.long	Reserved_IRQHandler         /*  6:  UART0 - DUT FPGA          */
 	.long	Reserved_IRQHandler         /*  7:  UART1 - DUT FPGA          */
 	.long	Reserved_IRQHandler         /*  8:  UART2 - DUT FPGA          */
 	.long	Reserved_IRQHandler         /*  9:  UART4 - not connected     */
