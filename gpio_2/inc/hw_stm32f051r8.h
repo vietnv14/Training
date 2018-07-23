@@ -8,15 +8,7 @@
 
 /* RCC - clock */
 #define BASE_ADDR_RCC		0x40021000u
-#define RCC_APB2ENR			*((unsigned int *)(BASE_ADDR_RCC + 0x18u))
-	/*ENABEL CLOCK*/
-#define RCC_APB2ENR_ENABEL_CLOCK_PORTA	(RCC_APB2ENR |= 1<<2)
-#define RCC_APB2ENR_ENABEL_CLOCK_PORTB	(RCC_APB2ENR |= 1<<3)
-#define RCC_APB2ENR_ENABEL_CLOCK_PORTC	(RCC_APB2ENR |= 1<<4)
-#define RCC_APB2ENR_ENABEL_CLOCK_PORTD	(RCC_APB2ENR |= 1<<5)
-#define RCC_APB2ENR_ENABEL_CLOCK_PORTE	(RCC_APB2ENR |= 1<<6)
-#define RCC_APB2ENR_ENABEL_CLOCK_PORTF	(RCC_APB2ENR |= 1<<7)
-#define RCC_APB2ENR_ENABEL_CLOCK_PORTG	(RCC_APB2ENR |= 1<<8)
+#define RCC_APB2ENR			((BASE_ADDR_RCC + 0x18u))	
 /* GPIO_CRH */
 
 	/*GPIO_CRH_SET_CNF*/
@@ -43,11 +35,11 @@
 
 #define ADDR_GPIO			0x40010800u
 
-#define GPIO_CRL(port)		*((unsigned int *)(ADDR_GPIO + (port)*0x400 + 0x00u))
-#define GPIO_CRH(port)		*((unsigned int *)(ADDR_GPIO + (port)*0x400 + 0x04u))
-#define GPIO_IDR(port)		*((unsigned int *)(ADDR_GPIO + (port)*0x400 + 0x08u))
-#define GPIO_ODR(port)		*((unsigned int *)(ADDR_GPIO + (port)*0x400 + 0x0Cu))
-#define GPIO_BSRR(port)		*((unsigned int *)(ADDR_GPIO + (port)*0x400 + 0x10u))
+#define GPIO_CRL(port)		((ADDR_GPIO + (port)*0x400 + 0x00u))
+#define GPIO_CRH(port)		((ADDR_GPIO + (port)*0x400 + 0x04u))
+#define GPIO_IDR(port)		((ADDR_GPIO + (port)*0x400 + 0x08u))
+#define GPIO_ODR(port)		((ADDR_GPIO + (port)*0x400 + 0x0Cu))
+#define GPIO_BSRR(port)		((ADDR_GPIO + (port)*0x400 + 0x10u))
 
 #define PORTA				0x00u
 #define PORTB				0x01u

@@ -8,7 +8,7 @@ INC_DIR		:= $(PRO_DIR)/inc
 SRC_DIR 	:= $(PRO_DIR)/src
 LINKER_FILE	:= $(PRO_DIR)/linker/stm32f0_easy.ld
 
-COMPILER_DIR 	:= C:/tools/compiler/7_2017-q4-major/
+COMPILER_DIR 	:= C:/tools/GCC_ARM/7_2017-q4-major
 
 PREFIX_GCC_COMPILER	:= arm-none-eabi
 CC				:= $(COMPILER_DIR)/bin/$(PREFIX_GCC_COMPILER)-gcc
@@ -27,7 +27,7 @@ $(OUTPUT_PATH)/main.o: $(SRC_DIR)/main.c
 
 $(OUTPUT_PATH)/startup_ARMCM0.o: $(SRC_DIR)/startup_ARMCM0.S
 	@echo " 2. compile $(SRC_DIR)/startup_ARMCM0.S file"
-	$(ASM) $(ASM_OPT) $(SRC_DIR)/startup_ARMCM0.s -o $(OUTPUT_PATH)/startup_ARMCM0.o
+	$(ASM) $(ASM_OPT) $(SRC_DIR)/startup_ARMCM0.S -o $(OUTPUT_PATH)/startup_ARMCM0.o
 
 build: $(FILE_TO_LINK) $(LINKER_FILE)
 	@echo " 3. link object files to create new binary image ($(PROJ_NAME).elf)"
