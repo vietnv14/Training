@@ -62,13 +62,17 @@ void delay(unsigned int timeout)
     }
 }
 
-void enabled_clock_button()
+void enabled_clock(void)
 {
-	//Enabel clock for port A
-	RCC_APB2ENR_ANABEL_CLOCK_PORTA;
-
-	//Enabel clock for button PB14
-	RCC_APB2ENR_ANABEL_CLOCK_PORTB;
+	unsigned int tempreg;
+	/* set mode PORTA */
+	tempreg = read_reg(RCC_APB2ENR, ~(1 << 2));
+	tempreg = tempreg | (1 << 2);
+	write_reg(RCC_APB2ENR, tempreg);
+	/* set mode PORTB */
+	tempreg = read_reg(RCC_APB2ENR, ~(1 << 3));
+	tempreg = tempreg | (1 << 3);
+	write_reg(RCC_APB2ENR, tempreg);
 }
 
 void Set_Mode_Pin_A()
@@ -79,12 +83,14 @@ void Set_Mode_Pin_A()
 	for(i = 4; i <= 6; i++)
 	{
 		/* xoa du lieu hien tai */
-		GPIO_CRL(PORTA) &= (~(0x3 << GPIO_CRL_MODE(i)));
+		temp_reg = read_reg(GPIO_CRL(PORTA), (~(0x3 << GPIO_CRL_MODE(i))));
+		temp_reg |= (GPIO_MODER_OUTPUT_2Mhz << GPIO_CRL_MODE(i));
 		/* ghi du lieu moi vao */
-		GPIO_CRL(PORTA) |= GPIO_MODER_OUTPUT_2Mhz << GPIO_CRL_MODE(i);
+		temp_reg = write_reg(GPIO_CRL(PORTA), temp_reg);
 		// xoa du lieu hien tai 
-		GPIO_CRL(PORTA) &= (~(0x3 << GPIO_CRL_CNF(i)));
-		GPIO_CRL(PORTA) |=  GPIO_CNF_OUTPUT_PP<< GPIO_CRL_CNF(i);
+		temp_reg = read_reg(GPIO_CRL(PORTA), (~(0x3 << GPIO_CRL_CNF(i))));
+		temp_reg |=  (GPIO_CNF_OUTPUT_PP<< GPIO_CRL_CNF(i));
+		temp_reg = write_reg(GPIO_CRL(PORTA), temp_reg);
 	} 	
 }
 
@@ -100,12 +106,12 @@ void init_pin()
 void led_off()
 {
 	//Set pin again
-	GPIO_BSRR(PORTA) |= 1<<4 | 1<<5 | 1<<6;
+	write_reg(GPIO_BSRR(PORTA), 1 << 4 | 1<<5 | 1<<6);
 }
 
 void led_on()
 {
-	GPIO_BSRR(PORTA) |= 1 << 20 | 1 << 21 | 1 << 22;
+	write_reg(GPIO_BSRR(PORTA), 1 << 20 | 1 << 21 | 1 << 22);
 }
 
 /*void Blink_led()
@@ -145,7 +151,7 @@ void led_on()
 void main(void)
 {
 	//unsigned int tt;
-	enabled_clock_button();
+	enabled_clock();
 	init_pin();
 	//Init_Button();
 	while(1)
