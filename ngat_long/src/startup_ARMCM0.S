@@ -95,7 +95,7 @@ __Vectors:
 	.long	Reserved_IRQHandler         /* 20: Reserved                   */
 	.long	Reserved_IRQHandler         /* 21: Reserved                   */
 	.long	Reserved_IRQHandler         /* 22: Reserved                   */
-	.long	Reserved_IRQHandler         /* 23: Reserved                   */
+	.long	EXTI9_5_IRQHandler          /* 23: EXTI9_5                    */
 	.long	Reserved_IRQHandler         /* 24: Reserved                   */
 	.long	Reserved_IRQHandler         /* 25: Reserved                   */
 	.long	Reserved_IRQHandler         /* 26: Reserved                   */

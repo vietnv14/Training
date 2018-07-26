@@ -6,8 +6,8 @@
 #define write_reg(addr, value)    *((unsigned long int *)(addr)) = value
 #define read_reg(addr, mask)      *((unsigned long int *)(addr)) & (mask)
 
-#define write_reg_8(addr, value)    *((char *)(addr)) = value
-#define read_reg_8(addr, mask)      *((char *)(addr)) & (mask)
+#define write_reg_8(addr, value)    *((unsigned char *)(addr)) = value
+#define read_reg_8(addr, mask)      *((unsigned char *)(addr)) & (mask)
 
 /* RCC - clock */
 #define BASE_ADDR_RCC		0x40021000u
@@ -72,15 +72,18 @@
 /*AFIO*/
 #define BASE_ADDR_AFIO				0x40010000u
 #define AFIO_EXTICR4				(BASE_ADDR_AFIO + 0x14u)
+#define AFIO_EXTICR3				(BASE_ADDR_AFIO + 0x10u)
 
 
 /* NVIC*/
+
+
 #define NVIC_ISER(num)				(0xE000E100u + ((num) * 0x04u))
 #define NVIC_ICER(num)				(0XE000E180u + ((num) * 0x04u))			
 #define	NVIC_ISPR(num)				(0XE000E200u + ((num) * 0x04u))
 #define NVIC_ICPR(num)				(0XE000E280u + ((num) * 0x04u))
 #define NVIC_IABR(num)				(0xE000E300u + ((num) * 0x04u))
-#define NVIC_IPR(num)				(0xE000E400u + (num)) 
+#define NVIC_IPR(num)				(0xE000E400u + num) 
 
 /* end file */
 #endif /* __HW_STM32F051R8_H__ */
